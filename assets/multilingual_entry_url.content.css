@@ -101,3 +101,13 @@ div.field-multilingual_entry_url div.tab-edit fieldset input.text {
 	width: 100px;
 	margin-right: 5px;
 }
+
+
+/*--------------------------------------------*/
+/* !Span */
+/*--------------------------------------------*/
+div.field-multilingual_entry_url span.frame {
+	border: none;
+	margin-bottom: 0;
+	padding: 0;
+}
