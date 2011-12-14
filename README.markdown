@@ -29,6 +29,13 @@ When adding this field to a section, the following options are available to you:
 
 * **Open links in a new window** enforces the hyperlink to spawn a new tab/window
 * **Hide this field on publish page** hides the hyperlink in the entry edit form
+* When defining an Anchor URL, you can use `$language_code` (without `{}`) as a placeholder for language codes. <br />
+Let's say my `Articles` Page has an URL param called `article-title` which points to a `Multilingual Text`. In order to generate the correct Entry URL in all languages, an expression like this must be used:
+
+    /articles/{//title/@*[name() = concat('handle-', $language_code)]}/   --> make sure you know the XML output of Multilingual Text
+    
+On generation, `$language_code` will be replaced with every Frontend language code, thus resulting localised URLs.
+
 
 
 ## Note about compatibility ##
@@ -47,18 +54,7 @@ Currently the URL is generated the Language Redirect way:
 
 
 
-# 3 Using Anchor URL (XPath expression) #
-
-When defining an Anchor URL, you can use `$language_code` (without `{}`) as a placeholder for language codes. <br />
-Let's say my `Articles` Page has an URL param called `article-title` which points to a `Multilingual Text`. In order to generate the correct Entry URL in all languages, an expression like this must be used:
-
-    /activitati/titlu/{//titlu/@*[name() = concat('handle-', $language_code)]}/   --> make sure you know the XML output of Multilingual Text
-    
-On generation, `$language_code` will be replaced with every Frontend language code, thus resulting localised URLs.
-
-
-
-# 4 Compatibility #
+# 3 Compatibility #
 
    Symphony | Field: Multilingual Entry URL
 ------------|----------------
@@ -79,7 +75,7 @@ Frontend Localisation | Field: Multilingual Entry URL
 
 
 
-# 5 Changelog #
+# 4 Changelog #
 
 - 1.0beta : 14 dec 2011
     * Initial beta release
