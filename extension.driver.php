@@ -4,6 +4,10 @@
 	
 	
 	
+	require_once(EXTENSIONS . '/entry_url_field/extension.driver.php');
+	
+	
+	
 	define_safe(MULTILINGUAL_ENTRY_URL_NAME, 'Field: Multilingual Entry URL');
 	define_safe(MULTILINGUAL_ENTRY_URL_GROUP, 'multilingual_entry_url');
 	
@@ -78,7 +82,7 @@
 		
 		public function appendAssets() {
 			if( $this->assets_loaded === false ){
-				Administration::instance()->Page->addScriptToHead(URL . '/extensions/' . MULTILINGUAL_ENTRY_URL_GROUP . '/assets/multilingual_entry_url.content.js', 10251842, false);
+				Administration::instance()->Page->addScriptToHead(URL . '/extensions/' . MULTILINGUAL_ENTRY_URL_GROUP . '/assets/multilingual_entry_url.content.js', 10000, false);
 				Administration::instance()->Page->addStylesheetToHead(URL . '/extensions/' . MULTILINGUAL_ENTRY_URL_GROUP . '/assets/multilingual_entry_url.content.css', "screen");
 				
 				$this->assets_loaded = true;
@@ -124,7 +128,7 @@
 				foreach ($fields as $field) {
 					$entries_table = 'tbl_entries_data_'.$field["field_id"];
 		
-					$show_columns = Symphony::Database()->fetch("SHOW COLUMNS FROM `{$entries_table}` LIKE 'file-%'");
+					$show_columns = Symphony::Database()->fetch("SHOW COLUMNS FROM `{$entries_table}` LIKE 'value-%'");
 					$columns = array();
 		
 					if ($show_columns) {
@@ -144,7 +148,7 @@
 					foreach ($new_language_codes as $language_code) {
 						// If columna language_code dosen't exist in the laguange drop columns
 		
-						if (!in_array('file-'.$language_code, $columns)) {
+						if (!in_array('value-'.$language_code, $columns)) {
 							Symphony::Database()->query("ALTER TABLE  `{$entries_table}` ADD COLUMN `value-{$language_code}` TEXT DEFAULT NULL");
 						}
 					}

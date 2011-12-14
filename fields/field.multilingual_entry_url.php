@@ -143,15 +143,27 @@
 		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
 			if (!self::$ready) return;
 			
+			$language_code = FrontendLanguage::instance()->getLangaugeCode();
+			
+			if( empty($language_code) ){
+				$language_code = FrontendLanguage::instance()->referenceLanguage();
+			}
+			
+			$value = empty($language_code) ? $data['value'] : $data['value-'.$language_code];
+			
 			$element = new XMLElement($this->get('element_name'));
-			$element->setValue(General::sanitize($data['value']));
+			$element->setValue(General::sanitize($value));
 			$wrapper->appendChild($element);
 		}
 		
 		public function prepareTableValue($data, XMLElement $link = null) {
 			if (empty($data)) return;
 			
-			$anchor =  Widget::Anchor($this->get('anchor_label'), $data['value']);
+			$language_code = Lang::get();
+			
+			$value = empty($language_code) ? $data['value'] : $data['value-'.$language_code];
+			
+			$anchor =  Widget::Anchor($this->get('anchor_label'), $value);
 			if ($this->get('new_window') == 'yes') $anchor->setAttribute('target', '_blank');
 			return $anchor->generate();
 		}
@@ -164,24 +176,56 @@
 		 * @param Entry $entry
 		 */
 		public function compile($entry) {
-			parent::compile($entry);
+			self::$ready = false;
+			
+			$xpath = $this->_driver->getXPath($entry);
+			
+			self::$ready = true;
 			
 			$entry_id = $entry->get('id');
 			$field_id = $this->get('id');
-			
-			$url = Symphony::Database()->fetchVar('value',0,"SELECT `value` FROM `tbl_entries_data_{$field_id}` WHERE `entry_id` = '{$entry_id}'");
+			$expression = $this->get('expression');
 			$values = array();
 			
 			foreach( FrontendLanguage::instance()->languageCodes() as $language_code ){
-				$values['value-'.$language_code] = PLHManagerURL::instance()->sym2lang($url, $language_code);
+				$replacements = array();
+				$mathces = array();
+				
+				// Find queries:
+				preg_match_all('/\{[^\}]+\}/', $expression, $matches);
+				
+				// Find replacements:
+				foreach ($matches[0] as $match) {
+					$new_match = str_replace('$language_code', "'$language_code'", $match);
+					
+					$results = @$xpath->query(trim($new_match, '{}'));
+				
+					if ($results->length) {
+						$replacements[$match] = $results->item(0)->nodeValue;
+					} else {
+						$replacements[$match] = '';
+					}
+				}
+				
+				// Apply replacements:
+				$url = str_replace(
+						array_keys($replacements),
+						array_values($replacements),
+						$expression
+				);
+				
+				$values['value-'.$language_code] = URL . '/' . $language_code . PLHManagerURL::instance()->sym2lang($url, $language_code);
 			}
 			
+			$values['value'] = $values['value-'.FrontendLanguage::instance()->referenceLanguage()];
+			
+			
+			// Save:
 			$this->Database->update(
 				$values,
 				"tbl_entries_data_{$field_id}",
 				"`entry_id` = '{$entry_id}'"
 			);
 		}
-		
 		
 	}
