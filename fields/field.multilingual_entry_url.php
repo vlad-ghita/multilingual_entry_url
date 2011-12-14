@@ -214,7 +214,7 @@
 						$expression
 				);
 				
-				$values['value-'.$language_code] = URL . '/' . $language_code . PLHManagerURL::instance()->sym2lang($url, $language_code);
+				$values['value-'.$language_code] = '/' . $language_code . PLHManagerURL::instance()->sym2lang($url, $language_code);
 			}
 			
 			$values['value'] = $values['value-'.FrontendLanguage::instance()->referenceLanguage()];
