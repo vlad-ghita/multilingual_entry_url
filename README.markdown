@@ -1,7 +1,7 @@
 Field: Multilingual Image upload
 ==============
 
-The multilingual version of the specialized field for image uploads.
+The multilingual version of the entry url field.
 
 * Version: 1.0beta
 * Build Date: 2011-12-14
