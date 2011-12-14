@@ -27,14 +27,13 @@ When adding this field to a section, the following options are available to you:
 
 		/members/profile/{entry/name/@handle}/
 
+* **For `Multilingual Text`**, you can use `$language_code` (without `{}`) as a placeholder for language codes. It will be replaced for each language on URL generation.<br />
+Let's say my `Articles` Section with a `Multilingual text` field called `Title`. Given an `Articles` Page with an URL param pointing to `Title`, an expression like this must be used:
+
+		/articles/{//title/@*[name() = concat('handle-', $language_code)]}/   --> make sure you know the XML output of Multilingual Text
+
 * **Open links in a new window** enforces the hyperlink to spawn a new tab/window
 * **Hide this field on publish page** hides the hyperlink in the entry edit form
-* When defining an Anchor URL, you can use `$language_code` (without `{}`) as a placeholder for language codes. <br />
-Let's say my `Articles` Page has an URL param called `article-title` which points to a `Multilingual Text`. In order to generate the correct Entry URL in all languages, an expression like this must be used:
-
-    /articles/{//title/@*[name() = concat('handle-', $language_code)]}/   --> make sure you know the XML output of Multilingual Text
-    
-On generation, `$language_code` will be replaced with every Frontend language code, thus resulting localised URLs.
 
 
 
