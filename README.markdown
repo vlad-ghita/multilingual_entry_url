@@ -3,8 +3,8 @@ Field: Multilingual Image upload
 
 The multilingual version of the entry url field.
 
-* Version: 1.0beta
-* Build Date: 2011-12-14
+* Version: 1.0
+* Build Date: 2011-12-21
 * Authors:
 	- [Xander Group](http://www.xanderadvertising.com)
 	- Vlad Ghita
@@ -69,12 +69,12 @@ Entry URL Field | Field: Multilingual Entry URL
   
 Frontend Localisation | Field: Multilingual Entry URL
 ----------------------|----------------
-    [0.4beta](https://github.com/vlad-ghita/frontend_localisation) — *     | [latest](https://github.com/vlad-ghita/multilingual_entry_url)
+    [0.5 beta](https://github.com/vlad-ghita/frontend_localisation) — *     | [latest](https://github.com/vlad-ghita/multilingual_entry_url)
 
 
 
 
 # 4 Changelog #
 
-- 1.0beta : 14 dec 2011
-    * Initial beta release
+- 1.0 : 21 dec 2011
+    * Initial release.

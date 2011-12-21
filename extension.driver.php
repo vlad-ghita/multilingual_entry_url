@@ -20,8 +20,8 @@
 		public function about() {
 			return array(
 				'name' => MULTILINGUAL_ENTRY_URL_NAME,
-				'version' => '1.0beta',
-				'release-date' => '2011-12-14',
+				'version' => '1.0',
+				'release-date' => '2011-12-21',
 				'author' => array(
 					array(
 						'name' => 'Xander Group',
@@ -119,7 +119,7 @@
 		 * @param array $context
 		 */
 		public function dSave($context){
-			$new_language_codes = FrontendLanguage::instance()->savedLanguages($context);
+			$new_language_codes = FLang::instance()->ld()->getSavedLanguages($context);
 		
 			$fields = Symphony::Database()->fetch('SELECT `field_id` FROM `tbl_fields_multilingual_entry_url`');
 		

@@ -23,7 +23,7 @@
 				`entry_id` INT(11) UNSIGNED NOT NULL,
 				`value` TEXT DEFAULT NULL,";
 			
-			foreach( FrontendLanguage::instance()->languageCodes() as $language_code ){
+			foreach( FLang::instance()->ld()->languageCodes() as $language_code ){
 				$query .= "`value-{$language_code}` TEXT DEFAULT NULL,";
 			}
 			
@@ -56,9 +56,9 @@
 			$container->appendChild($label);
 			
 			
-			$reference_language = FrontendLanguage::instance()->referenceLanguage();
-			$all_languages = FrontendLanguage::instance()->allLanguages();
-			$langauge_codes = FrontendLanguage::instance()->languageCodes();
+			$reference_language = FLang::instance()->referenceLanguage();
+			$all_languages = FLang::instance()->ld()->allLanguages();
+			$language_codes = FLang::instance()->ld()->languageCodes();
 			
 			
 			/* Tabs */
@@ -66,7 +66,7 @@
 			$ul = new XMLElement('ul');
 			$ul->setAttribute('class', 'tabs');
 			
-			foreach( $langauge_codes as $language_code ){
+			foreach( $language_codes as $language_code ){
 				$class = $language_code . ($language_code == $reference_language ? ' active' : '');
 				$li = new XMLElement('li',($all_languages[$language_code] ? $all_languages[$language_code] : __('Unknown language')));
 				$li->setAttribute('class', $class);
@@ -87,7 +87,7 @@
 			
 			$callback = Administration::instance()->getPageCallback();
 			
-			foreach( $langauge_codes as $language_code ){
+			foreach( $language_codes as $language_code ){
 				$div = new XMLElement('div', NULL, array('class' => 'tab-panel tab-'.$language_code));
 			
 				$span = new XMLElement('span', NULL, array('class' => 'frame'));
@@ -128,7 +128,7 @@
 		public function processRawFieldData($data, &$status, $simulate = false, $entry_id = null) {
 			$result = parent::processRawFieldData($data, $status, $simulate, $entry_id);
 			
-			foreach( FrontendLanguage::instance()->languageCodes() as $language_code ){
+			foreach( FLang::instance()->ld()->languageCodes() as $language_code ){
 				$result['value-'.$language_code] = null;
 			}
 			
@@ -142,10 +142,10 @@
 		public function appendFormattedElement(&$wrapper, $data, $encode = false) {
 			if (!self::$ready) return;
 			
-			$language_code = FrontendLanguage::instance()->getLangaugeCode();
+			$language_code = FLang::instance()->ld()->languageCode();
 			
 			if( empty($language_code) ){
-				$language_code = FrontendLanguage::instance()->referenceLanguage();
+				$language_code = FLang::instance()->referenceLanguage();
 			}
 			
 			$value = empty($language_code) ? $data['value'] : $data['value-'.$language_code];
@@ -186,7 +186,7 @@
 			$expression = $this->get('expression');
 			$values = array();
 			
-			foreach( FrontendLanguage::instance()->languageCodes() as $language_code ){
+			foreach( FLang::instance()->ld()->languageCodes() as $language_code ){
 				$replacements = array();
 				$mathces = array();
 				
@@ -216,7 +216,7 @@
 				$values['value-'.$language_code] = '/' . $language_code . PLHManagerURL::instance()->sym2lang($url, $language_code);
 			}
 			
-			$values['value'] = $values['value-'.FrontendLanguage::instance()->referenceLanguage()];
+			$values['value'] = $values['value-'.FLang::instance()->referenceLanguage()];
 			
 			
 			// Save:
