@@ -4,7 +4,7 @@ Field: Multilingual Image upload
 The multilingual version of the entry url field.
 
 * Version: 1.0
-* Build Date: 2011-12-21
+* Build Date: 2011-12-22
 * Authors:
 	- [Xander Group](http://www.xanderadvertising.com)
 	- Vlad Ghita
@@ -12,7 +12,7 @@ The multilingual version of the entry url field.
 	- Symphony 2.0 or above
 	- [Entry URL Field](https://github.com/vlad-ghita/image_upload) at least version 1.1
 	- [Page LHandles](https://github.com/vlad-ghita/page_lhandles) at least version 2.1
-	- [Frontend Localisation](https://github.com/vlad-ghita/frontend_localisation) at least version 0.4beta
+	- [Frontend Localisation](https://github.com/vlad-ghita/frontend_localisation) at least version 0.5beta
 
 Thank you all other Symphony & Extensions developers for your inspirational work.
 
@@ -76,5 +76,5 @@ Frontend Localisation | Field: Multilingual Entry URL
 
 # 4 Changelog #
 
-- 1.0 : 21 dec 2011
+- 1.0 : 22 dec 2011
     * Initial release.
