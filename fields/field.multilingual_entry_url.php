@@ -4,6 +4,7 @@
 	
 	require_once(EXTENSIONS . '/entry_url_field/fields/field.entry_url.php');
 	require_once(EXTENSIONS . '/page_lhandles/lib/class.PLHManagerURL.php');
+	require_once(EXTENSIONS . '/frontend_localisation/lib/class.FLang.php');
 	
 	
 	

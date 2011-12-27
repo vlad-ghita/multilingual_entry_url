@@ -1,5 +1,5 @@
-Field: Multilingual Image upload
-==============
+Multilingual Entry URL
+======================
 
 The multilingual version of the entry url field.
 
@@ -9,16 +9,16 @@ The multilingual version of the entry url field.
 	- [Xander Group](http://www.xanderadvertising.com)
 	- Vlad Ghita
 * Requirements:
-	- Symphony 2.0 or above
-	- [Entry URL Field](https://github.com/vlad-ghita/image_upload) at least version 1.1
-	- [Page LHandles](https://github.com/vlad-ghita/page_lhandles) at least version 2.1
-	- [Frontend Localisation](https://github.com/vlad-ghita/frontend_localisation) at least version 0.5beta
+	- Symphony 2.2.x
+	- [Entry URL Field](https://github.com/vlad-ghita/image_upload)
+	- [Page LHandles](https://github.com/vlad-ghita/page_lhandles)
+	- [Frontend Localisation](https://github.com/vlad-ghita/frontend_localisation)
 
 Thank you all other Symphony & Extensions developers for your inspirational work.
 
 
 
-# 1 About #
+## 1 About ##
 
 When adding this field to a section, the following options are available to you:
 
@@ -37,7 +37,7 @@ Let's say my `Articles` Section with a `Multilingual text` field called `Title`.
 
 
 
-## Note about compatibility ##
+### Note about compatibility ###
 
 Currently the URL is generated the Language Redirect way:
 
@@ -45,36 +45,8 @@ Currently the URL is generated the Language Redirect way:
 
 
 
-# 2 Installation #
+## 2 Installation ##
  
 1. Upload the 'multilingual_entry_url' folder in this archive to your Symphony 'extensions' folder.
 2. Enable it by selecting the "Field: Multilingual Entry URL", choose Enable from the with-selected menu, then click Apply.
 3. The field will be available in the list when creating a Section.
-
-
-
-# 3 Compatibility #
-
-   Symphony | Field: Multilingual Entry URL
-------------|----------------
-2.0 — *     | [latest](https://github.com/vlad-ghita/multilingual_entry_url)
-
-Entry URL Field | Field: Multilingual Entry URL
-----------------|----------------
-[1.1.4](https://github.com/vlad-ghita/image_upload) — *     | [latest](https://github.com/vlad-ghita/multilingual_entry_url)
-
-  Page LHandles | Field: Multilingual Entry URL
-----------------|----------------
-  [2.1](https://github.com/vlad-ghita/page_lhandles) — *     | [latest](https://github.com/vlad-ghita/multilingual_entry_url)
-  
-Frontend Localisation | Field: Multilingual Entry URL
-----------------------|----------------
-    [0.5 beta](https://github.com/vlad-ghita/frontend_localisation) — *     | [latest](https://github.com/vlad-ghita/multilingual_entry_url)
-
-
-
-
-# 4 Changelog #
-
-- 1.0 : 22 dec 2011
-    * Initial release.
