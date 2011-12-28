@@ -20,8 +20,8 @@
 		public function about() {
 			return array(
 				'name' => MULTILINGUAL_ENTRY_URL_NAME,
-				'version' => '1.0',
-				'release-date' => '2011-12-22',
+				'version' => '1.0.1',
+				'release-date' => '2011-12-28',
 				'author' => array(
 					array(
 						'name' => 'Xander Group',

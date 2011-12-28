@@ -3,8 +3,8 @@ Multilingual Entry URL
 
 The multilingual version of the entry url field.
 
-* Version: 1.0
-* Build Date: 2011-12-22
+* Version: 1.0.1
+* Build Date: 2011-12-28
 * Authors:
 	- [Xander Group](http://www.xanderadvertising.com)
 	- Vlad Ghita

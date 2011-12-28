@@ -221,7 +221,7 @@
 			
 			
 			// Save:
-			$this->Database->update(
+			Symphony::Database()->update(
 				$values,
 				"tbl_entries_data_{$field_id}",
 				"`entry_id` = '{$entry_id}'"
