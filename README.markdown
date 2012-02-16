@@ -10,7 +10,7 @@ The multilingual version of the entry url field.
 	- Vlad Ghita
 * Requirements:
 	- Symphony 2.2.x
-	- [Entry URL Field](https://github.com/vlad-ghita/image_upload)
+	- [Entry URL Field](https://github.com/nickdunn/entry_url_field)
 	- [Page LHandles](https://github.com/vlad-ghita/page_lhandles)
 	- [Frontend Localisation](https://github.com/vlad-ghita/frontend_localisation)
 
