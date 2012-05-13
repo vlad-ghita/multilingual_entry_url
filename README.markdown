@@ -3,18 +3,16 @@ Multilingual Entry URL
 
 The multilingual version of the entry url field.
 
-* Version: 1.0.1
-* Build Date: 2011-12-28
+* Version: 1.1.0
+* Build Date: 2012-05-11
 * Authors:
 	- [Xander Group](http://www.xanderadvertising.com)
 	- Vlad Ghita
 * Requirements:
-	- Symphony 2.2.x
+	- Symphony 2.3
 	- [Entry URL Field](https://github.com/nickdunn/entry_url_field)
 	- [Page LHandles](https://github.com/vlad-ghita/page_lhandles)
 	- [Frontend Localisation](https://github.com/vlad-ghita/frontend_localisation)
-
-Thank you all other Symphony & Extensions developers for your inspirational work.
 
 
 
@@ -39,9 +37,9 @@ Let's say my `Articles` Section with a `Multilingual text` field called `Title`.
 
 ### Note about compatibility ###
 
-Currently the URL is generated the Language Redirect way:
+Currently the URL is generated this way:
 
-    /language_code/URL
+    /__LANGUAGE-CODE__/URL
 
 
 
