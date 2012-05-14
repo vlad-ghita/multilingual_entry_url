@@ -32,7 +32,7 @@
 				`entry_id` INT(11) UNSIGNED NOT null,
 				`value` TEXT DEFAULT null,";
 
-			foreach( FLang::instance()->getLangs() as $lc ){
+			foreach( FLang::getLangs() as $lc ){
 				$query .= "`value-{$lc}` TEXT DEFAULT null,";
 			}
 
@@ -67,9 +67,9 @@
 			$container->appendChild($label);
 
 
-			$main_lang = FLang::instance()->getMainLang();
-			$all_langs = FLang::instance()->getAllLangs();
-			$langs = FLang::instance()->getLangs();
+			$main_lang = FLang::getMainLang();
+			$all_langs = FLang::getAllLangs();
+			$langs = FLang::getLangs();
 
 
 			/* Tabs */
@@ -133,7 +133,7 @@
 		public function processRawFieldData($data, &$status, &$message, $simulate = false, $entry_id = null){
 			$result = parent::processRawFieldData($data, $status, $message, $simulate, $entry_id);
 
-			foreach( FLang::instance()->getLangs() as $lc ){
+			foreach( FLang::getLangs() as $lc ){
 				$result['value-'.$lc] = null;
 			}
 
@@ -149,10 +149,10 @@
 		public function appendFormattedElement(&$wrapper, $data, $encode = false){
 			if( !self::$ready ) return;
 
-			$lang_code = FLang::instance()->getLangCode();
+			$lang_code = FLang::getLangCode();
 
 			if( empty($lang_code) ){
-				$lang_code = FLang::instance()->getMainLang();
+				$lang_code = FLang::getMainLang();
 			}
 
 			$value = empty($lang_code) ? $data['value'] : $data['value-'.$lang_code];
@@ -194,9 +194,9 @@
 			$field_id = $this->get('id');
 			$expression = $this->get('expression');
 			$values = array();
-			$main_lang = FLang::instance()->getMainLang();
+			$main_lang = FLang::getMainLang();
 
-			foreach( FLang::instance()->getLangs() as $lc ){
+			foreach( FLang::getLangs() as $lc ){
 				$replacements = array();
 
 				// Find queries:
