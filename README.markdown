@@ -3,18 +3,6 @@ Multilingual Entry URL
 
 The multilingual version of the entry url field.
 
-* Version: 1.2
-* Build Date: 2012-05-14
-* Authors:
-	- [Xander Group](http://www.xanderadvertising.com)
-	- Vlad Ghita
-* Requirements:
-	- Symphony 2.3
-	- [Entry URL Field](https://github.com/nickdunn/entry_url_field)
-	- [Page LHandles](https://github.com/vlad-ghita/page_lhandles)
-	- [Frontend Localisation](https://github.com/vlad-ghita/frontend_localisation)
-
-
 
 ## 1 About ##
 

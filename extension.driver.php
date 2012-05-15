@@ -15,8 +15,9 @@
 
 	class Extension_Multilingual_Entry_URL extends Extension_Entry_URL_Field
 	{
+		const FIELD_TABLE = 'tbl_fields_multilingual_entry_url';
 
-		protected $assets_loaded = false;
+		protected static $assets_loaded = false;
 
 
 
@@ -24,13 +25,9 @@
 		/*  Installation  */
 		/*------------------------------------------------------------------------------------------------*/
 
-		public function uninstall(){
-			Symphony::Database()->query("DROP TABLE `tbl_multilingual_entry_url`");
-		}
-
 		public function install(){
-			Symphony::Database()->query("
-				CREATE TABLE IF NOT EXISTS `tbl_fields_multilingual_entry_url` (
+			return Symphony::Database()->query(sprintf(
+				"CREATE TABLE `%s` (
 					`id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
 					`field_id` INT(11) UNSIGNED NOT NULL,
 					`anchor_label` VARCHAR(255) DEFAULT NULL,
@@ -39,10 +36,21 @@
 					`hide` ENUM('yes', 'no') DEFAULT 'no',
 					PRIMARY KEY (`id`),
 					KEY `field_id` (`field_id`)
-				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-			");
+				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;",
+				self::FIELD_TABLE
+			));
+		}
 
-			return true;
+		public function uninstall(){
+			try{
+				Symphony::Database()->query(sprintf(
+					"DROP TABLE `%s`",
+					self::FIELD_TABLE
+				));
+			}
+			catch( DatabaseException $dbe ){
+				// table deosn't exist
+			}
 		}
 
 
@@ -105,58 +113,60 @@
 		 * @param array $context
 		 */
 		public function dFLSavePreferences($context){
-			$fields = Symphony::Database()->fetch('SELECT `field_id` FROM `tbl_fields_multilingual_entry_url`');
+			$fields = Symphony::Database()->fetch(sprintf(
+				'SELECT `field_id` FROM `%s`',
+				self::FIELD_TABLE
+			));
 
-			if( $fields ){
+			if( is_array($fields) && !empty($fields) ){
+				$consolidate = $context['context']['settings'][MIU_GROUP]['consolidate'];
+
 				// Foreach field check multilanguage values foreach language
 				foreach( $fields as $field ){
 					$entries_table = 'tbl_entries_data_'.$field["field_id"];
 
-					$show_columns = Symphony::Database()->fetch("SHOW COLUMNS FROM `{$entries_table}` LIKE 'value-%'");
+					try{
+						$show_columns = Symphony::Database()->fetch(sprintf(
+							"SHOW COLUMNS FROM `%s` LIKE 'value-%%'",
+							$entries_table
+						));
+					}
+					catch( DatabaseException $dbe ){
+						// Field doesn't exist. Better remove it's settings
+						Symphony::Database()->query(sprintf(
+							"DELETE FROM `%s` WHERE `field_id` = '%s';",
+							self::FIELD_TABLE, $field["field_id"]
+						));
+						continue;
+					}
+
 					$columns = array();
 
-					if( $show_columns ){
+					// Remove obsolete fields
+					if( is_array($show_columns) && !empty($show_columns) )
+
 						foreach( $show_columns as $column ){
 							$lc = substr($column['Field'], strlen($column['Field']) - 2);
 
 							// If not consolidate option AND column lang_code not in supported languages codes -> Drop Column
-							if( ($_POST['settings'][MEU_GROUP]['consolidate'] !== 'yes') && !in_array($lc, $context['new_langs']) ){
-								Symphony::Database()->query("ALTER TABLE  `{$entries_table}` DROP COLUMN `value-{$lc}`");
-							} else{
+							if( ($consolidate !== 'yes') && !in_array($lc, $context['new_langs']) )
+								Symphony::Database()->query(
+									"ALTER TABLE `{$entries_table}`
+										DROP COLUMN `value-{$lc}`;"
+								);
+							else
 								$columns[] = $column['Field'];
-							}
 						}
-					}
 
 					// Add new fields
-					foreach( $context['new_langs'] as $lc ){
-						// If column lang_code dosen't exist in the laguange drop columns
+					foreach( $context['new_langs'] as $lc )
 
-						if( !in_array('value-'.$lc, $columns) ){
-							Symphony::Database()->query("ALTER TABLE  `{$entries_table}` ADD COLUMN `value-{$lc}` TEXT DEFAULT NULL");
-						}
-					}
+						if( !in_array('value-'.$lc, $columns) )
+							Symphony::Database()->query(
+								"ALTER TABLE `{$entries_table}`
+									ADD COLUMN `value-{$lc}` varchar(255) default NULL;
+							");
 				}
-			}
-		}
-
-
-
-
-		/*------------------------------------------------------------------------------------------------*/
-		/*  Utilities  */
-		/*------------------------------------------------------------------------------------------------*/
-
-		public function appendAssets(){
-			if( $this->assets_loaded === false ){
-				$this->assets_loaded = true;
-
-				$page = Administration::instance()->Page;
-
-				// multilingual stuff
-				$fl_assets = URL.'/extensions/frontend_localisation/assets/frontend_localisation.multilingual_tabs';
-				$page->addStylesheetToHead($fl_assets.'.css', 'screen', null, false);
-				$page->addScriptToHead($fl_assets.'_init.js', null, false);
 			}
 		}
 	}

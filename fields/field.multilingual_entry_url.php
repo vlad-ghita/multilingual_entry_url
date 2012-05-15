@@ -5,8 +5,9 @@
 
 
 	require_once(EXTENSIONS.'/entry_url_field/fields/field.entry_url.php');
-	require_once(EXTENSIONS.'/page_lhandles/lib/class.PLHManagerURL.php');
+	require_once(EXTENSIONS.'/frontend_localisation/extension.driver.php');
 	require_once(EXTENSIONS.'/frontend_localisation/lib/class.FLang.php');
+	require_once(EXTENSIONS.'/page_lhandles/lib/class.PLHManagerURL.php');
 
 
 
@@ -17,28 +18,33 @@
 		/*  Definition  */
 		/*------------------------------------------------------------------------------------------------*/
 
-		protected $_driver;
-
 		public function __construct(){
 			parent::__construct();
 
 			$this->_name = 'Multilingual Entry URL';
-			$this->_driver = Symphony::ExtensionManager()->create('multilingual_entry_url');
 		}
 
 		public function createTable(){
-			$query = "CREATE TABLE IF NOT EXISTS `tbl_entries_data_{$this->get('id')}` (
-				`id` INT(11) UNSIGNED NOT null AUTO_INCREMENT,
-				`entry_id` INT(11) UNSIGNED NOT null,
-				`value` TEXT DEFAULT null,";
+			$query = "
+				CREATE TABLE IF NOT EXISTS `tbl_entries_data_{$this->get('id')}` (
+					`id` INT(11) UNSIGNED NOT null AUTO_INCREMENT,
+					`entry_id` INT(11) UNSIGNED NOT null,
+					`value` TEXT DEFAULT null,";
 
 			foreach( FLang::getLangs() as $lc ){
-				$query .= "`value-{$lc}` TEXT DEFAULT null,";
+				$query .= spritnf("`value-%s` TEXT DEFAULT null,", $lc);
 			}
 
-			$query .= "PRIMARY KEY (`id`),
-				KEY `entry_id` (`entry_id`),
-				FULLTEXT KEY `value` (`value`)
+			$query .= "
+					PRIMARY KEY (`id`),
+					KEY `entry_id` (`entry_id`),";
+
+			foreach( FLang::getLangs() as $lc ){
+				$query .= sprintf('FULLTEXT KEY `value-%1$s` (`value-%1$s`),', $lc);
+			}
+
+			$query .= "
+					FULLTEXT KEY `value` (`value`)
 				) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;";
 
 			return Symphony::Database()->query($query);
@@ -51,63 +57,63 @@
 		/*------------------------------------------------------------------------------------------------*/
 
 		public function displayPublishPanel(&$wrapper, $data = null, $flagWithError = null, $prefix = null, $postfix = null){
-			if( $this->get('hide') == 'yes' ) return;
+			if( $this->get('hide') === 'yes' ) return;
 
-			$this->_driver->appendAssets();
-
-			$wrapper->setAttribute('class', $wrapper->getAttribute('class').' field-multilingual_entry_url field-multilingual');
-			$container = new XMLElement('div', null, array('class' => 'container'));
-
-
-			/* Label */
-
-			$label = Widget::Label($this->get('label'));
-			if( $this->get('required') != 'yes' ) $label->appendChild(new XMLElement('i', __('Optional')));
-
-			$container->appendChild($label);
-
+			Extension_Frontend_Localisation::appendAssets();
 
 			$main_lang = FLang::getMainLang();
 			$all_langs = FLang::getAllLangs();
 			$langs = FLang::getLangs();
 
+			$wrapper->setAttribute('class', $wrapper->getAttribute('class').' field-multilingual_entry_url field-multilingual');
+			$container = new XMLElement('div', null, array('class' => 'container'));
 
-			/* Tabs */
+
+			/*------------------------------------------------------------------------------------------------*/
+			/*  Label  */
+			/*------------------------------------------------------------------------------------------------*/
+
+			$label = Widget::Label($this->get('label'));
+			if( $this->get('required') != 'yes' ) $label->appendChild(new XMLElement('i', __('Optional')));
+			$container->appendChild($label);
+
+
+			/*------------------------------------------------------------------------------------------------*/
+			/*  Tabs  */
+			/*------------------------------------------------------------------------------------------------*/
 
 			$ul = new XMLElement('ul', null, array('class' => 'tabs'));
-
 			foreach( $langs as $lc ){
-				$li = new XMLElement(
-					'li',
-					$all_langs[$lc] ? $all_langs[$lc] : __('Unknown language'),
-					array('class' => $lc.($lc === $main_lang ? ' active' : ''))
-				);
-
+				$li = new XMLElement('li', $all_langs[$lc], array('class' => $lc));
 				$lc === $main_lang ? $ul->prependChild($li) : $ul->appendChild($li);
 			}
 
 			$container->appendChild($ul);
 
 
-			/* Links */
+			/*------------------------------------------------------------------------------------------------*/
+			/*  Panels  */
+			/*------------------------------------------------------------------------------------------------*/
 
 			$callback = Administration::instance()->getPageCallback();
+			$entry_id = $callback['context']['entry_id'];
 
 			foreach( $langs as $lc ){
 				$div = new XMLElement('div', null, array('class' => 'tab-panel tab-'.$lc));
 
 				$span = new XMLElement('span', null, array('class' => 'frame'));
 
-				$anchor = Widget::Anchor($this->get('anchor_label'), (string)$data['value-'.$lc]);
-
-				if( $this->get('new_window') == 'yes' ){
-					$anchor->setAttribute('target', '_blank');
-				}
-
-				if( is_null($callback['context']['entry_id']) ){
+				if( is_null($entry_id) ){
 					$span->setValue(__('The link will be created after saving this entry'));
 					$span->setAttribute('class', 'frame inactive');
+
 				} else{
+					$anchor = Widget::Anchor($this->get('anchor_label'), (string)$data['value-'.$lc]);
+
+					if( $this->get('new_window') == 'yes' ){
+						$anchor->setAttribute('target', '_blank');
+					}
+
 					$span->appendChild($anchor);
 				}
 
@@ -115,6 +121,10 @@
 				$container->appendChild($div);
 			}
 
+
+			/*------------------------------------------------------------------------------------------------*/
+			/*  Error  */
+			/*------------------------------------------------------------------------------------------------*/
 
 			if( !is_null($flagWithError) ){
 				$wrapper->appendChild(Widget::Error($container, $flagWithError));
