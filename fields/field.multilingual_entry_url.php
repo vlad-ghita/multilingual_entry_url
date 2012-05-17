@@ -32,7 +32,7 @@
 					`value` TEXT DEFAULT null,";
 
 			foreach( FLang::getLangs() as $lc ){
-				$query .= spritnf("`value-%s` TEXT DEFAULT null,", $lc);
+				$query .= sprintf("`value-%s` TEXT DEFAULT null,", $lc);
 			}
 
 			$query .= "
