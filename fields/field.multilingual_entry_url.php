@@ -175,9 +175,14 @@
 		public function prepareTableValue($data, XMLElement $link = null){
 			if( empty($data) ) return;
 
-			$lang_code = Lang::get();
+			$lc = Lang::get();
 
-			$value = empty($lang_code) ? $data['value'] : $data['value-'.$lang_code];
+			if( !FLang::validateLangCode($lc) )
+				$lc = FLang::getLangCode();
+
+			$value = empty($lc) ? $data['value'] : $data['value-'.$lc];
+
+			if( is_null($value) ) return '';
 
 			$anchor = Widget::Anchor($this->get('anchor_label'), $value);
 			if( $this->get('new_window') == 'yes' ) $anchor->setAttribute('target', '_blank');
@@ -214,7 +219,7 @@
 
 				// Find replacements:
 				foreach( $matches[0] as $match ){
-					$new_match = str_replace('$lang_code', "'$lc'", $match);
+					$new_match = str_replace('$language_code', "'$lc'", $match);
 
 					$results = @$xpath->query(trim($new_match, '{}'));
 
