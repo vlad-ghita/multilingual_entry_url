@@ -29,6 +29,7 @@
 				CREATE TABLE IF NOT EXISTS `tbl_entries_data_{$this->get('id')}` (
 					`id` INT(11) UNSIGNED NOT null AUTO_INCREMENT,
 					`entry_id` INT(11) UNSIGNED NOT null,
+					`label` TEXT DEFAULT null,
 					`value` TEXT DEFAULT null,";
 
 			foreach( FLang::getLangs() as $lc ){
@@ -211,29 +212,27 @@
 			self::$ready = true;
 
 			$main_lang = FLang::getMainLang();
+			$data = array();
 
 			// values
 			$expression = $this->get('expression');
-			$values = array();
 			foreach( FLang::getLangs() as $lc ){
 				$result = $this->getExpression($xpath, $expression, $lc);
-				$values['value-'.$lc] = ($main_lang !== $lc ? '/'.$lc : '').PLHManagerURL::sym2lang($result, $lc);
+				$data['value-'.$lc] = ($main_lang !== $lc ? '/'.$lc : '').PLHManagerURL::sym2lang($result, $lc);
 			}
-			$values['value'] = $values['value-'.$main_lang];
+			$data['value'] = $data['value-'.$main_lang];
 
 			// labels
 			$expression = $this->get('anchor_label');
-			$labels = array();
 			foreach( FLang::getLangs() as $lc ){
-				$labels['label-'.$lc] = $this->getExpression($xpath, $expression, $lc);
+				$data['label-'.$lc] = $this->getExpression($xpath, $expression, $lc);
 			}
-			$labels['label'] = $labels['label-'.$main_lang];
+			$data['label'] = $data['label-'.$main_lang];
 
 
 			// Save:
 			Symphony::Database()->update(
-				$values,
-				$labels,
+				$data,
 				sprintf("tbl_entries_data_%s", $this->get('id')),
 				sprintf("`entry_id` = '%s'", $entry->get('id'))
 			);
