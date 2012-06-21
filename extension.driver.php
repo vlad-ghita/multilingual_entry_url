@@ -41,6 +41,39 @@
 			));
 		}
 
+		public function update($prev_version){
+			if( version_compare($prev_version, '1.4.0', '<') ){
+				// update settings table
+
+
+				// update fields tables
+				$fields = Symphony::Database()->fetch(sprintf("SELECT `field_id`,`anchor_label` FROM `%s`", self::FIELD_TABLE));
+
+				foreach( $fields as $field ){
+					$entries_table = 'tbl_entries_data_'.$field["field_id"];
+
+					// add fields
+					$query = "ALTER TABLE `{$entries_table}` ADD COLUMN `label` TEXT DEFAULT NULL";
+
+					foreach( FLang::getLangs() as $lc ){
+						$query .= sprintf(",`label-%s` TEXT DEFAULT null", $lc);
+					}
+
+					Symphony::Database()->query($query);
+
+					// default values
+					$values = array();
+					foreach( FLang::getLangs() as $lc ){
+						$values["label-{$lc}"] = $field['anchor_label'];
+					}
+
+					Symphony::Database()->update($values, $entries_table);
+				}
+			}
+
+			return true;
+		}
+
 		public function uninstall(){
 			try{
 				Symphony::Database()->query(sprintf(

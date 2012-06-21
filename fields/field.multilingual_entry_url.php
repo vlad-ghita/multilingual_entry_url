@@ -33,6 +33,7 @@
 
 			foreach( FLang::getLangs() as $lc ){
 				$query .= sprintf("`value-%s` TEXT DEFAULT null,", $lc);
+				$query .= sprintf("`label-%s` TEXT DEFAULT null,", $lc);
 			}
 
 			$query .= "
@@ -108,7 +109,7 @@
 					$span->setAttribute('class', 'frame inactive');
 
 				} else{
-					$anchor = Widget::Anchor($this->get('anchor_label'), (string)$data['value-'.$lc]);
+					$anchor = Widget::Anchor((string)$data['label-'.$lc], (string)$data['value-'.$lc]);
 
 					if( $this->get('new_window') == 'yes' ){
 						$anchor->setAttribute('target', '_blank');
@@ -144,6 +145,7 @@
 			$result = parent::processRawFieldData($data, $status, $message, $simulate, $entry_id);
 
 			foreach( FLang::getLangs() as $lc ){
+				$result['label-'.$lc] = null;
 				$result['value-'.$lc] = null;
 			}
 
@@ -159,15 +161,17 @@
 		public function appendFormattedElement(&$wrapper, $data, $encode = false){
 			if( !self::$ready ) return;
 
-			$lang_code = FLang::getLangCode();
+			$lc = FLang::getLangCode();
 
-			if( empty($lang_code) ){
-				$lang_code = FLang::getMainLang();
+			if( empty($lc) ){
+				$lc = FLang::getMainLang();
 			}
 
-			$value = empty($lang_code) ? $data['value'] : $data['value-'.$lang_code];
+			$label = empty($lc) ? $data['label'] : $data['label-'.$lc];
+			$value = empty($lc) ? $data['value'] : $data['value-'.$lc];
 
 			$element = new XMLElement($this->get('element_name'));
+			$element->setAttribute('label', General::sanitize($label));
 			$element->setValue(General::sanitize($value));
 			$wrapper->appendChild($element);
 		}
@@ -180,11 +184,12 @@
 			if( !FLang::validateLangCode($lc) )
 				$lc = FLang::getLangCode();
 
+			$label = empty($lc) ? $data['label'] : $data['label-'.$lc];
 			$value = empty($lc) ? $data['value'] : $data['value-'.$lc];
 
 			if( is_null($value) ) return '';
 
-			$anchor = Widget::Anchor($this->get('anchor_label'), $value);
+			$anchor = Widget::Anchor($label, $value);
 			if( $this->get('new_window') == 'yes' ) $anchor->setAttribute('target', '_blank');
 			return $anchor->generate();
 		}
@@ -205,55 +210,69 @@
 
 			self::$ready = true;
 
-			$entry_id = $entry->get('id');
-			$field_id = $this->get('id');
-			$expression = $this->get('expression');
-			$values = array();
 			$main_lang = FLang::getMainLang();
 
+			// values
+			$expression = $this->get('expression');
+			$values = array();
 			foreach( FLang::getLangs() as $lc ){
-				$replacements = array();
-
-				// Find queries:
-				preg_match_all('/\{[^\}]+\}/', $expression, $matches);
-
-				// Find replacements:
-				foreach( $matches[0] as $match ){
-					$new_match = str_replace('$language_code', "'$lc'", $match);
-
-					$results = @$xpath->query(trim($new_match, '{}'));
-
-					if( $results->length ){
-						$replacements[$match] = $results->item(0)->nodeValue;
-					} else{
-						$replacements[$match] = '';
-					}
-				}
-
-				// Apply replacements:
-				$url = str_replace(
-					array_keys($replacements),
-					array_values($replacements),
-					$expression
-				);
-
-				$values['value-'.$lc] = ($main_lang !== $lc ? '/'.$lc : '').PLHManagerURL::sym2lang($url, $lc);
+				$result = $this->getExpression($xpath, $expression, $lc);
+				$values['value-'.$lc] = ($main_lang !== $lc ? '/'.$lc : '').PLHManagerURL::sym2lang($result, $lc);
 			}
-
 			$values['value'] = $values['value-'.$main_lang];
+
+			// labels
+			$expression = $this->get('anchor_label');
+			$labels = array();
+			foreach( FLang::getLangs() as $lc ){
+				$labels['label-'.$lc] = $this->getExpression($xpath, $expression, $lc);
+			}
+			$labels['label'] = $labels['label-'.$main_lang];
 
 
 			// Save:
 			Symphony::Database()->update(
 				$values,
-				"tbl_entries_data_{$field_id}",
-				"`entry_id` = '{$entry_id}'"
+				$labels,
+				sprintf("tbl_entries_data_%s", $this->get('id')),
+				sprintf("`entry_id` = '%s'", $entry->get('id'))
 			);
 		}
 
 
+		private function getExpression($xpath, $expression, $lc){
+			$replacements = array();
 
-		/*------------------------------------------------------------------------------------------------*/
+			// Find queries:
+			preg_match_all('/\{[^\}]+\}/', $expression, $matches);
+
+			// Find replacements:
+			foreach( $matches[0] as $match ){
+				$new_match = str_replace('$language_code', "'$lc'", $match);
+
+				$results = @$xpath->query(trim($new_match, '{}'));
+
+				if( $results->length ){
+					$replacements[$match] = $results->item(0)->nodeValue;
+				} else{
+					$replacements[$match] = '';
+				}
+			}
+
+			// Apply replacements:
+			$value = str_replace(
+				array_keys($replacements),
+				array_values($replacements),
+				$expression
+			);
+
+			return $value;
+		}
+
+
+
+
+			/*------------------------------------------------------------------------------------------------*/
 		/*  Field schema  */
 		/*------------------------------------------------------------------------------------------------*/
 
