@@ -22,6 +22,7 @@
 			parent::__construct();
 
 			$this->_name = 'Multilingual Entry URL';
+			$this->_driver = ExtensionManager::create('multilingual_entry_url');
 		}
 
 		public function createTable(){
@@ -142,6 +143,12 @@
 		/*  Input  */
 		/*------------------------------------------------------------------------------------------------*/
 
+		public function checkPostFieldData($data, &$message, $entry_id = null) {
+			$this->_driver->registerField($this);
+
+			return self::__OK__;
+		}
+
 		public function processRawFieldData($data, &$status, &$message, $simulate = false, $entry_id = null){
 			$result = parent::processRawFieldData($data, $status, $message, $simulate, $entry_id);
 
@@ -247,7 +254,7 @@
 
 			// Find replacements:
 			foreach( $matches[0] as $match ){
-				$new_match = str_replace('$language_code', "'$lc'", $match);
+				$new_match = str_replace('$language_code', "$lc", $match);
 
 				$results = @$xpath->query(trim($new_match, '{}'));
 
@@ -271,7 +278,7 @@
 
 
 
-			/*------------------------------------------------------------------------------------------------*/
+		/*------------------------------------------------------------------------------------------------*/
 		/*  Field schema  */
 		/*------------------------------------------------------------------------------------------------*/
 

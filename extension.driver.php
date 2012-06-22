@@ -13,11 +13,13 @@
 
 
 
-	class Extension_Multilingual_Entry_URL extends Extension_Entry_URL_Field
+	class Extension_Multilingual_Entry_URL extends Extension
 	{
 		const FIELD_TABLE = 'tbl_fields_multilingual_entry_url';
 
 		protected static $assets_loaded = false;
+
+		protected static $fields = array();
 
 
 
@@ -84,9 +86,23 @@
 		/*------------------------------------------------------------------------------------------------*/
 
 		public function getSubscribedDelegates(){
-			$delegates = parent::getSubscribedDelegates();
+			return array(
+				array(
+					'page'		=> '/publish/new/',
+					'delegate'	=> 'EntryPostCreate',
+					'callback'	=> 'compileBackendFields'
+				),
+				array(
+					'page'		=> '/publish/edit/',
+					'delegate'	=> 'EntryPostEdit',
+					'callback'	=> 'compileBackendFields'
+				),
+				array(
+					'page'		=> '/frontend/',
+					'delegate'	=> 'EventPostSaveFilter',
+					'callback'	=> 'compileFrontendFields'
+				),
 
-			$delegates = array_merge($delegates, array(
 				array(
 					'page' => '/system/preferences/',
 					'delegate' => 'AddCustomPreferenceFieldsets',
@@ -96,10 +112,8 @@
 					'page' => '/extensions/frontend_localisation/',
 					'delegate' => 'FLSavePreferences',
 					'callback' => 'dFLSavePreferences'
-				),
-			));
-
-			return $delegates;
+				)
+			);
 		}
 
 
@@ -191,6 +205,66 @@
 									ADD COLUMN `value-{$lc}` varchar(255) default NULL;
 							");
 				}
+			}
+		}
+
+
+
+		/*------------------------------------------------------------------------------------------------*/
+		/*  Utilities */
+		/*------------------------------------------------------------------------------------------------*/
+
+		public function getXPath($entry) {
+			$entry_xml = new XMLElement('entry');
+			$data = $entry->getData();
+
+			$entry_xml->setAttribute('id', $entry->get('id'));
+
+			$associated = $entry->fetchAllAssociatedEntryCounts();
+
+			if (is_array($associated) and !empty($associated)) {
+				foreach ($associated as $section => $count) {
+					$related_section = SectionManager::fetch($section);
+					$entry_xml->setAttribute($related_section->get('handle'), (string)$count);
+				}
+			}
+
+			// Add fields:
+			foreach ($data as $field_id => $values) {
+				if (empty($field_id)) continue;
+
+				$field = FieldManager::fetch($field_id);
+				$field->appendFormattedElement($entry_xml, $values, false, 'all-languages');
+			}
+
+			$xml = new XMLElement('data');
+			$xml->appendChild($entry_xml);
+
+			$dom = new DOMDocument();
+			$dom->loadXML($xml->generate(true));
+
+			return new DOMXPath($dom);
+		}
+
+
+
+		/*------------------------------------------------------------------------------------------------*/
+		/*  Fields */
+		/*------------------------------------------------------------------------------------------------*/
+
+		public function registerField($field) {
+			self::$fields[] = $field;
+		}
+
+		public function compileBackendFields($context) {
+			foreach (self::$fields as $field) {
+				$field->compile($context['entry']);
+			}
+		}
+
+		public function compileFrontendFields($context) {
+			foreach (self::$fields as $field) {
+				$field->compile($context['entry']);
 			}
 		}
 	}

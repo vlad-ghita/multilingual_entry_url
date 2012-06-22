@@ -30,6 +30,10 @@
 	</dependencies>
 
 	<releases>
+		<release version="1.5" date="2012-06-22" min="2.3.x"><![CDATA[
+			* Take advantage of new `all-languages` mode for `multilingual_` fields.
+		]]></release>
+
 		<release version="1.4" date="2012-06-21" min="2.3.x"><![CDATA[
 			* Compatibility with Entry URL 1.3.0.
 			* Added personalized labels supporting xPath at entry level instead of field level.
