@@ -11,12 +11,12 @@ When adding this field to a section, the following options are available to you:
 * **Anchor Label** is the text used for the hyperlink in the backend
 * **Anchor URL** is the URL of your entry view page on the frontend. An `<entry id="123">...</entry>` nodeset is provided from which you can grab field values, just as you would from a datasource. For example:
 
-		/members/profile/{entry/name/@handle}/
+		{entry/title/item[@lang='$language_code']}
 
 * **For `Multilingual Text`**, you can use `$language_code` (without `{}`) as a placeholder for language codes. It will be replaced for each language on URL generation.<br />
 Let's say my `Articles` Section with a `Multilingual text` field called `Title`. Given an `Articles` Page with an URL param pointing to `Title`, an expression like this must be used:
 
-		/articles/{//title/@*[name() = concat('handle-', $language_code)]}/   --> make sure you know the XML output of Multilingual Text
+		/articles/{entry/title/item[@lang='$language_code']/@handle}/   --> make sure you know the XML output of Multilingual Text
 
 * **Open links in a new window** enforces the hyperlink to spawn a new tab/window
 * **Hide this field on publish page** hides the hyperlink in the entry edit form

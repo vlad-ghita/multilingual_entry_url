@@ -44,7 +44,7 @@
 		}
 
 		public function update($prev_version){
-			if( version_compare($prev_version, '1.4.0', '<') ){
+			if( version_compare($prev_version, '1.4', '<') ){
 				$fields = Symphony::Database()->fetch(sprintf("SELECT `field_id`,`anchor_label` FROM `%s`", self::FIELD_TABLE));
 
 				foreach( $fields as $field ){
