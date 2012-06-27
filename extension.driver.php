@@ -52,7 +52,7 @@
 
 					$query = "ALTER TABLE `{$entries_table}` ADD COLUMN `label` TEXT DEFAULT NULL";
 					foreach( FLang::getLangs() as $lc ){
-						$query .= sprintf(",`label-%s` TEXT DEFAULT null", $lc);
+						$query .= sprintf(", ADD COLUMN `label-%s` TEXT DEFAULT null", $lc);
 					}
 					Symphony::Database()->query($query);
 
