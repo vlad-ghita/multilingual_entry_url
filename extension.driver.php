@@ -190,7 +190,8 @@
 							if( ($consolidate !== 'yes') && !in_array($lc, $context['new_langs']) )
 								Symphony::Database()->query(
 									"ALTER TABLE `{$entries_table}`
-										DROP COLUMN `value-{$lc}`;"
+										DROP COLUMN `value-{$lc}`,
+										DROP COLUMN `label-{$lc}`;"
 								);
 							else
 								$columns[] = $column['Field'];
@@ -202,7 +203,8 @@
 						if( !in_array('value-'.$lc, $columns) )
 							Symphony::Database()->query(
 								"ALTER TABLE `{$entries_table}`
-									ADD COLUMN `value-{$lc}` varchar(255) default NULL;
+									ADD COLUMN `value-{$lc}` varchar(255) default NULL,
+									ADD COLUMN `label-{$lc}` TEXT DEFAULT null;
 							");
 				}
 			}
